@@ -21,6 +21,7 @@ from selenium import webdriver
 from selenium.webdriver.common.action_chains import ActionChains
 from PIL import Image
 from image_slicer import ImageSlicer
+import pandas as pd
 
 
 class BaiduIndexFetcher:
@@ -46,7 +47,7 @@ class BaiduIndexFetcher:
         # 打开谷歌浏览器
         # Firefox()
         # Chrome()
-        browser = webdriver.Chrome('./chromedriver')
+        browser = webdriver.Chrome()
         # 输入网址
         browser.get(url)
 
@@ -138,7 +139,7 @@ class BaiduIndexFetcher:
                 raise AttributeError
             return '|'.join(dates), (end_date - start_date).days
         except Exception as ex:
-            print('输入错误：' + ex)
+            print ('出错原因：' , ex)
             return None
 
     @staticmethod
@@ -171,7 +172,7 @@ class BaiduIndexFetcher:
         elif sel == 2:
             date_response = None
             while date_response is None:
-                sel = str(input("请输入起止日期，格式按YYMMDD，空格分隔："))
+                sel = str(input("请输入起止日期，格式按YYYYMMDD，空格分隔(例如：20170101 20170501)："))
                 date_response = BaiduIndexFetcher.__get_date_type(sel)
             date_type = date_response[0]
             days = date_response[1]
@@ -263,6 +264,7 @@ class BaiduIndexFetcher:
 
             except IndexError as err:
                 print(i, err)
+        
         return index
 
     def __save_digit(self, digit, digit_image):
@@ -278,11 +280,13 @@ class BaiduIndexFetcher:
             try:
                 digits = self.image_slicer.pretreatment(str(i)+".png")
                 number = BaiduIndexFetcher.recognize_number(digits, BaiduIndexFetcher.recognize_digit)
-                index.append(number)
+                index.append(number)                
             except Exception as ex:
                 print(ex)
+                        
         return index
-
+        
+    
     @staticmethod
     def recognize_number(digits, func):
         number = 0
@@ -310,3 +314,4 @@ if __name__ == "__main__":
             break
         for ele in index:
             print(ele)
+            
